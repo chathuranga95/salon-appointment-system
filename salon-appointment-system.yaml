@@ -1,0 +1,198 @@
+openapi: 3.1.0
+info:
+  title: Salon Appointment Reservation System
+  version: 1.0.0
+paths:
+  /slots:
+    get:
+      summary: Get available appointment slots
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          required: true
+          description: Date for which to get available slots
+        - in: query
+          name: hour
+          schema:
+            type: integer
+          required: false
+          description: Specific hour for which to get available slots
+      responses:
+        200:
+          description: List of available appointment slots
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotsResponse'
+        400:
+          description: Bad request
+        500:
+          description: Internal Server Error
+
+  /bookings:
+    get:
+      summary: Get placed appointments for a user
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: ID of the user
+      responses:
+        200:
+          description: List of placed appointments for the given user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingsResponse'
+        400:
+          description: Bad request
+        500:
+          description: Internal Server Error
+
+  /booking:
+    post:
+      summary: Place a new booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewBookingRequest'
+      responses:
+        200:
+          description: Booking successfully placed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        400:
+          description: Bad request
+        500:
+          description: Internal Server Error
+    delete:
+      summary: Delete a booking
+      parameters:
+        - in: query
+          name: bookingRef
+          schema:
+            type: integer
+          required: true
+          description: Reference ID of the booking
+      responses:
+        200:
+          description: Booking successfully deleted
+        400:
+          description: Bad request
+        500:
+          description: Internal Server Error
+
+components:
+  schemas:
+    Slot:
+      type: object
+      required:
+        - date
+        - hour
+        - partition
+        - barber
+      properties:
+        date:
+          type: string
+          format: date
+        hour:
+          type: integer
+        partition:
+          type: integer
+        barber:
+          type: string
+
+    SlotsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Slot'
+
+    Booking:
+      type: object
+      required:
+        - bookingRef
+        - date
+        - hour
+        - partition
+        - barber
+      properties:
+        bookingRef:
+          type: integer
+        date:
+          type: string
+          format: date
+        hour:
+          type: integer
+        partition:
+          type: integer
+        barber:
+          type: string
+
+    BookingsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Booking'
+
+    NewBookingRequest:
+      type: object
+      required:
+        - date
+        - userId
+        - hour
+        - partition
+        - barber
+      properties:
+        date:
+          type: string
+          format: date
+        userId:
+          type: string
+        hour:
+          type: integer
+        partition:
+          type: integer
+        barber:
+          type: string
+
+    BookingResponse:
+      type: object
+      required:
+        - bookingRef
+        - date
+        - userId
+        - hour
+        - partition
+        - barber
+      properties:
+        bookingRef:
+          type: integer
+        date:
+          type: string
+          format: date
+        userId:
+          type: string
+        hour:
+          type: integer
+        partition:
+          type: integer
+        barber:
+          type: string
